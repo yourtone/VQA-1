@@ -3,7 +3,7 @@ __version__ = '0.9'
 
 # Interface for accessing the VQA dataset.
 
-# This code is based on the code written by Tsung-Yi Lin for MSCOCO Python API available at the following link: 
+# This code is based on the code written by Tsung-Yi Lin for MSCOCO Python API available at the following link:
 # (https://github.com/pdollar/coco/blob/master/PythonAPI/pycocotools/coco.py).
 
 # The following functions are defined:
@@ -23,43 +23,43 @@ import copy
 class VQA:
 	def __init__(self, annotation_file=None, question_file=None):
 		"""
-       	Constructor of VQA helper class for reading and visualizing questions and answers.
-        :param annotation_file (str): location of VQA annotation file
-        :return:
+		Constructor of VQA helper class for reading and visualizing questions and answers.
+		:param annotation_file (str): location of VQA annotation file
+		:return:
 		"""
-        # load dataset
+		# load dataset
 		self.dataset = {}
 		self.questions = {}
 		self.qa = {}
 		self.qqa = {}
 		self.imgToQA = {}
 		if not annotation_file == None and not question_file == None:
-			print 'loading VQA annotations and questions into memory...'
+			print('loading VQA annotations and questions into memory...')
 			time_t = datetime.datetime.utcnow()
 			dataset = json.load(open(annotation_file, 'r'))
 			questions = json.load(open(question_file, 'r'))
-			print datetime.datetime.utcnow() - time_t
+			print(datetime.datetime.utcnow() - time_t)
 			self.dataset = dataset
 			self.questions = questions
 			self.createIndex()
 
 	def createIndex(self):
-        # create index
-		print 'creating index...'
- 		imgToQA = {ann['image_id']: [] for ann in self.dataset['annotations']}
+		# create index
+		print('creating index...')
+		imgToQA = {ann['image_id']: [] for ann in self.dataset['annotations']}
 		qa =  {ann['question_id']:       [] for ann in self.dataset['annotations']}
 		qqa = {ann['question_id']:       [] for ann in self.dataset['annotations']}
- 		for ann in self.dataset['annotations']:
+		for ann in self.dataset['annotations']:
 			imgToQA[ann['image_id']] += [ann]
 			qa[ann['question_id']] = ann
 		for ques in self.questions['questions']:
-  			qqa[ques['question_id']] = ques
-		print 'index created!'
+			qqa[ques['question_id']] = ques
+		print('index created!')
 
- 		# create class members
- 		self.qa = qa
+		# create class members
+		self.qa = qa
 		self.qqa = qqa
- 		self.imgToQA = imgToQA
+		self.imgToQA = imgToQA
 
 	def info(self):
 		"""
@@ -67,17 +67,17 @@ class VQA:
 		:return:
 		"""
 		for key, value in self.datset['info'].items():
-			print '%s: %s'%(key, value)
+			print('%s: %s'%(key, value))
 
 	def getQuesIds(self, imgIds=[], quesTypes=[], ansTypes=[]):
 		"""
 		Get question ids that satisfy given filter conditions. default skips that filter
-		:param 	imgIds    (int array)   : get question ids for given imgs
+		:param  imgIds    (int array)   : get question ids for given imgs
 				quesTypes (str array)   : get question ids for given question types
 				ansTypes  (str array)   : get question ids for given answer types
 		:return:    ids   (int array)   : integer array of question ids
 		"""
-		imgIds 	  = imgIds    if type(imgIds)    == list else [imgIds]
+		imgIds    = imgIds    if type(imgIds)    == list else [imgIds]
 		quesTypes = quesTypes if type(quesTypes) == list else [quesTypes]
 		ansTypes  = ansTypes  if type(ansTypes)  == list else [ansTypes]
 
@@ -87,9 +87,9 @@ class VQA:
 			if not len(imgIds) == 0:
 				anns = sum([self.imgToQA[imgId] for imgId in imgIds if imgId in self.imgToQA],[])
 			else:
- 				anns = self.dataset['annotations']
+				anns = self.dataset['annotations']
 			anns = anns if len(quesTypes) == 0 else [ann for ann in anns if ann['question_type'] in quesTypes]
- 			anns = anns if len(ansTypes)  == 0 else [ann for ann in anns if ann['answer_type'] in ansTypes]
+			anns = anns if len(ansTypes)  == 0 else [ann for ann in anns if ann['answer_type'] in ansTypes]
 		ids = [ann['question_id'] for ann in anns]
 		return ids
 
@@ -97,8 +97,8 @@ class VQA:
 		"""
 		Get image ids that satisfy given filter conditions. default skips that filter
 		:param quesIds   (int array)   : get image ids for given question ids
-               quesTypes (str array)   : get image ids for given question types
-               ansTypes  (str array)   : get image ids for given answer types
+			   quesTypes (str array)   : get image ids for given question types
+			   ansTypes  (str array)   : get image ids for given answer types
 		:return: ids     (int array)   : integer array of image ids
 		"""
 		quesIds   = quesIds   if type(quesIds)   == list else [quesIds]
@@ -138,10 +138,10 @@ class VQA:
 			return 0
 		for ann in anns:
 			quesId = ann['question_id']
-			print "Question: %s" %(self.qqa[quesId]['question'])
+			print("Question: %s" %(self.qqa[quesId]['question']))
 			for ans in ann['answers']:
-				print "Answer %d: %s" %(ans['answer_id'], ans['answer'])
-		
+				print("Answer %d: %s" %(ans['answer_id'], ans['answer']))
+
 	def loadRes(self, resFile, quesFile):
 		"""
 		Load result file and return a result object.
@@ -156,7 +156,7 @@ class VQA:
 		res.dataset['data_subtype'] = copy.deepcopy(self.questions['data_subtype'])
 		res.dataset['license'] = copy.deepcopy(self.questions['license'])
 
-		print 'Loading and preparing results...     '
+		print('Loading and preparing results...     ')
 		time_t = datetime.datetime.utcnow()
 		anns    = json.load(open(resFile))
 		assert type(anns) == list, 'results is not an array of objects'
@@ -164,14 +164,47 @@ class VQA:
 		assert set(annsQuesIds) == set(self.getQuesIds()), \
 		'Results do not correspond to current VQA set. Either the results do not have predictions for all question ids in annotation file or there is atleast one question id that does not belong to the question ids in the annotation file.'
 		for ann in anns:
-			quesId 			     = ann['question_id']
+			quesId               = ann['question_id']
 			if res.dataset['task_type'] == 'Multiple Choice':
 				assert ann['answer'] in self.qqa[quesId]['multiple_choices'], 'predicted answer is not one of the multiple choices'
 			qaAnn                = self.qa[quesId]
-			ann['image_id']      = qaAnn['image_id'] 
+			ann['image_id']      = qaAnn['image_id']
 			ann['question_type'] = qaAnn['question_type']
 			ann['answer_type']   = qaAnn['answer_type']
-		print 'DONE (t=%0.2fs)'%((datetime.datetime.utcnow() - time_t).total_seconds())
+		print('DONE (t=%0.2fs)'%((datetime.datetime.utcnow() - time_t).total_seconds()))
+
+		res.dataset['annotations'] = anns
+		res.createIndex()
+		return res
+
+	def loadResNoAssert(self, resFile, quesFile):
+		"""
+		Load result file and return a result object.
+		:param   resFile (str)     : file name of result file
+		:return: res (obj)         : result api object
+		"""
+		res = VQA()
+		res.questions = json.load(open(quesFile))
+		res.dataset['info'] = copy.deepcopy(self.questions['info'])
+		res.dataset['task_type'] = copy.deepcopy(self.questions['task_type'])
+		res.dataset['data_type'] = copy.deepcopy(self.questions['data_type'])
+		res.dataset['data_subtype'] = copy.deepcopy(self.questions['data_subtype'])
+		res.dataset['license'] = copy.deepcopy(self.questions['license'])
+
+		print('Loading and preparing results...     ')
+		time_t = datetime.datetime.utcnow()
+		anns    = json.load(open(resFile))
+		assert type(anns) == list, 'results is not an array of objects'
+		annsQuesIds = [ann['question_id'] for ann in anns]
+		for ann in anns:
+			quesId               = ann['question_id']
+			if res.dataset['task_type'] == 'Multiple Choice':
+				assert ann['answer'] in self.qqa[quesId]['multiple_choices'], 'predicted answer is not one of the multiple choices'
+			qaAnn                = self.qa[quesId]
+			ann['image_id']      = qaAnn['image_id']
+			ann['question_type'] = qaAnn['question_type']
+			ann['answer_type']   = qaAnn['answer_type']
+		print('DONE (t=%0.2fs)'%((datetime.datetime.utcnow() - time_t).total_seconds()))
 
 		res.dataset['annotations'] = anns
 		res.createIndex()

@@ -1,2 +1,6 @@
 *.pyc
 *.swp*
+Results/
+Annotations/
+Questions/
+Images/
