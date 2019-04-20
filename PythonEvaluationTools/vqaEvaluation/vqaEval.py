@@ -99,24 +99,25 @@ class VQAEval:
 				matchingAns = [item for item in otherGTAns if item['answer']==resAns]
 				acc = min(1, float(len(matchingAns))/3)
 				gtAcc.append(acc)
-			quesType    = gts[quesId]['question_type']
-			ansType     = gts[quesId]['answer_type']
+			#quesType    = gts[quesId]['question_type']
+			#ansType     = gts[quesId]['answer_type']
 			avgGTAcc = float(sum(gtAcc))/len(gtAcc)
 			accQA.append(avgGTAcc)
-			if quesType not in accQuesType:
-				accQuesType[quesType] = []
-			accQuesType[quesType].append(avgGTAcc)
-			if ansType not in accAnsType:
-				accAnsType[ansType] = []
-			accAnsType[ansType].append(avgGTAcc)
+			#if quesType not in accQuesType:
+				#accQuesType[quesType] = []
+			#accQuesType[quesType].append(avgGTAcc)
+			#if ansType not in accAnsType:
+				#accAnsType[ansType] = []
+			#accAnsType[ansType].append(avgGTAcc)
 			self.setEvalQA(quesId, avgGTAcc)
-			self.setEvalQuesType(quesId, quesType, avgGTAcc)
-			self.setEvalAnsType(quesId, ansType, avgGTAcc)
+			#self.setEvalQuesType(quesId, quesType, avgGTAcc)
+			#self.setEvalAnsType(quesId, ansType, avgGTAcc)
 			if step%100 == 0:
 				self.updateProgress(step/float(len(quesIds)))
 			step = step + 1
 
-		self.setAccuracy(accQA, accQuesType, accAnsType)
+		#self.setAccuracy(accQA, accQuesType, accAnsType)
+		self.accuracy['overall'] = round(100*float(sum(accQA))/len(accQA), self.n)
 		print("Done computing accuracy")
 	
 	def processPunctuation(self, inText):
